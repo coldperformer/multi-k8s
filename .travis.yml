@@ -12,3 +12,16 @@ before_install:
   - gcloud components update kubectl
     # Add authentication of your account using credentials defined inside json file
   - gcloud auth activate-service-account --key-file service-account.json
+    # Setting project name over Google Cloud
+  - gcloud config set project multi-k8s-289517
+    # Setting Kubernetes data center 
+  - gcloud config set compute/zome ####Remaining####
+    # Setting Kubernetes cluster to use -> cluster name
+  - gcloud container clusters get-credentials multi-cluster
+    # Docker credentials already set on Travis dashboard
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    # To build image on travis to run some tests for our development version 
+  - docker build -t coldperformer/react-test -f ./client/Dockerfile.dev ./client
+
+scripts:
+  - docker run -e CI=true coldperformer/docker-react npm test

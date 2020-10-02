@@ -8,12 +8,12 @@ spec:
     matchLabels:
       component: web
   template:
-      metadata:
-        labels:
-          component: web
-      spec:
-        containers:
-          - name: client
-            image: coldperformer/multi-client
-            ports:
-              - containerPort: 3000
+    metadata:
+      labels:
+        component: web
+    spec:
+      containers:
+        - name: client
+          image: stephengrider/multi-client
+          ports:
+            - containerPort: 3000

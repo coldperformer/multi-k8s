@@ -1,6 +1,12 @@
 sudo: required
 services:
   - docker
+env:
+  global:
+      # Assign the current commit id to SHA variable
+    - SHA=$(git rev-parse HEAD)
+      # Configure google cloud cli won't show prompts 
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
     # travis decryption credentials (done at last)
   - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
@@ -14,9 +20,9 @@ before_install:
   - gcloud auth activate-service-account --key-file service-account.json
     # Setting project name over Google Cloud
   - gcloud config set project multi-k8s-289517
-    # Setting Kubernetes data center 
-  - gcloud config set compute/zome ####Remaining####
-    # Setting Kubernetes cluster to use -> cluster name
+    # Setting Kubernetes data center zone
+  - gcloud config set compute/zone us-central1-c	
+    # Setting Kubernetes cluster to use -> cluster name for CLI commands
   - gcloud container clusters get-credentials multi-cluster
     # Docker credentials already set on Travis dashboard
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -24,4 +30,14 @@ before_install:
   - docker build -t coldperformer/react-test -f ./client/Dockerfile.dev ./client
 
 scripts:
+    # To run some test on our docker project
   - docker run -e CI=true coldperformer/docker-react npm test
+
+deploy:
+  # Tell travis to run a script and we will take care of the deployment
+  provider: script
+  # script that we want to execute is deploy.sh
+  script: bash ./deploy.sh
+  # Only execute deploy.sh when the code is pushed to master branch
+  on:
+    branch: master

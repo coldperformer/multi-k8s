@@ -31,7 +31,7 @@ before_install:
 
 scripts:
     # To run some test on our docker project
-  - docker run -e CI=true coldperformer/docker-react npm test
+  - docker run -e CI=true coldperformer/react-test npm test
 
 deploy:
   # Tell travis to run a script and we will take care of the deployment
